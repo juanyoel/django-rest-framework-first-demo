@@ -22,7 +22,7 @@ class UserProfileManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, name, password):
-        # Crear un super usuario
+        """Crear un super usuario."""
         user = self.create_user(email, name, password)
 
         user.is_superuser = True
@@ -33,7 +33,7 @@ class UserProfileManager(BaseUserManager):
 
 
 class UserProfile(AbstractBaseUser, PermissionsMixin):
-    # Modelo Base de Datos para Usuarios en el Sistema
+    """Modelo Base de Datos para Usuarios en el Sistema."""
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
@@ -45,15 +45,15 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['name']
 
     def get_full_name(self):
-        # Obtener nombre completo del usuario.
+        """Obtener nombre completo del usuario."""
         return self.name
 
     def get_short_name(self):
-        # Obtener nombre corto del usuario.
+        """Obtener nombre corto del usuario."""
         return self.name
 
     def __str__(self):
-        # Obtener una representación de cadena del usuario.
+        """Obtener una representación de cadena del usuario."""
         return self.email
 
 
