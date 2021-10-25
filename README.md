@@ -115,4 +115,89 @@ Así de esta manera se utilizará ese modelo para registro y autenticación.
   - En este caso como no utilizaremos el id, ponemos pk=None, supongo que más adelante en el curso ya si lo vincules con alguna BD.
 
 ## PRUEBA DE LOS METODOS ANTERIORES:
+---- Cuando levantas el servidor ya es muy intuitivo como hacer las pruebas hasta este punto.
+
+## CREACION DE NUESTRO PRIMER VIEWSET:
+* Usan funciones de operadores de modelo:
+  - def list(): enlista objetos.
+  - create(): crea.
+  - retrive(): obtiene un objeto específico.
+  - partial_update()
+  - destroy(): elimina
+* Qué son los Viewsets?
+ - Se encarga de la lógica común.
+ - Buenos para operaciones standard de BD.
+ - Forma más rápida de hacer una interfaz con una BD.
+* Cuándo usamos viewsets?
+ - CRUD simple.
+ - API simple.
+ - poca personalización de la lógica.
+ - Trabaja con estructuras de datos normales.
+
+* Para hacer uso de *viewsets* primero importamos *from rest_framework import viewsets* en nuestro archivo *views.py*
+* Tener en cuenta que cuando vamos a crear la clase del view set heredamos ViewSet por lo que pasamos como parámetro *viewsets.ViewSet*
+
+# Funcionamieto (SUPER IMPORTANTE):
+- En el APIView definimos las funciones basados en el método que queremos correr, por ejemplo un get, put, patch, post, delete.... para el viewset corres funciones que normalmente representan acciones que normalmente se correrían en un API típico.
+
+## CONTINUACION DE LOS VIEWSETS:
+* Ya definido el viewset de prueba nos quedaría de la siguiente manera:
+
+![image](https://user-images.githubusercontent.com/84333525/138752882-d1bf4e2e-b37f-4c7a-91ec-31d6f5486b4e.png)
+
+* Después de creado debemos pasar a crear la ruta por la cual el viewset será accedido esto en el archico *urls.py*
+* ## IMPORTANTE --> Las rutas en el archivo *urls.py* en los viewsets se manejan de forma distina a las APIViews debido a que los viewsets se manejan mediante *routers*
+* Por lo que primero importamos *from rest_framework.routers import DefaultRouter*
+
+![image](https://user-images.githubusercontent.com/84333525/138754517-0a3df1b4-ef04-4446-a648-ecd50b9a6810.png)
+
+* Luego tenemos que crear una variable router (por convención el nombre) donde inicializmos la clase DefaultRouter.
+* Luego ya podemos registrar todos los viewsets que necesitemos.
+* Por último en los *urlpatterns* agregamos un nuevo path, en el que utilizamos el include para adicionar todas las urls que esten registradas en el router.
+
+** En este ejemplo podemos usar el mismo serializer utilizado por el APIView porque estaremos realizando las mismas funciones, o sea convirtiendo el mismo json que solo tiene nombre, igual en todo caso de dudas ver video en el minuto 1h:00.
+- Recordar que al igual que en el APIView debemos crear la variable serializer y vincularla con el serializer que ya tenemos hecho.
+
+![image](https://user-images.githubusercontent.com/84333525/138759450-e36fd72b-b968-44e5-a6bb-a4706aa74bc8.png)
+
+![image](https://user-images.githubusercontent.com/84333525/138759667-a946188e-21b6-4110-918e-aa97178473a6.png)
+
+# NOTA IMPORTANTE *** EN EL EJEMPLO DEL VIDEO EN EL MINUTO 1H:04M NO ME FUNCIONO EL METODO GET COMO EN EL EJEMPLO.
+
+## API PARA PERFIL DE USUARIOS
+### Qué debemos hacer?
+- Manejar registro nuevo de usuarios.
+- Validar datos de perfil.
+
+### Enlistar perfiles existentes
+- Buscar perfiles.
+- Email y nombre.
+
+### Ver perfil específico
+- Id del perfil
+
+### Actualiza perfil de usuarios loguiados.
+- Cambiar nombre, email y password.
+
+### Borrar perfil
+
+## El próximo paso lógico cuando ya sabemos que debemos hacer es definir las urls.
+* URLs del API
+ - /api/profile/ --> enlistar perfiles en http GET, crear en http POST
+ - /api/profile/<profile_id> --> ver perfil específico en http GET, actualiza objeto en http PUT, borrar en http DELETE
+
+* Como estaremos trabajando con el perfil de usuario es momento de crear el serializer de perfil de usuario que es el que nos permitirá interactuar con la información (ver definición de serializer).
+* Ya ubicados en el archivo *serializer.py* creamos la clase UserProfileSerializer
+
+![image](https://user-images.githubusercontent.com/84333525/138761776-172a4719-4631-4926-add5-7f25fca21c86.png)
+
+Tener en cuenta que heredamos en este caso de *serializers.ModelSerializer* porque partiremos a partir de un modelo determinado.
+
+![image](https://user-images.githubusercontent.com/84333525/138762032-24b87fcb-4888-4dcb-8610-dd417d3362d2.png)
+
+Importamos los modelos para poder trabajar con ellos.
+
+* Creamos una clase META, este es un feature de python que ya vi antes en el curso de Django, no olvidar estudiar nuevamente el código y readme.md de ese curso. En esa clase Meta es donde vinculamos el modelo con el serializer (segun recuerdo en esa clase meta en el curso de django vinculabamos el modelo con un formulario :/)
+* 
+
 
