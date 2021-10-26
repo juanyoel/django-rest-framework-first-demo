@@ -198,6 +198,132 @@ Tener en cuenta que heredamos en este caso de *serializers.ModelSerializer* porq
 Importamos los modelos para poder trabajar con ellos.
 
 * Creamos una clase META, este es un feature de python que ya vi antes en el curso de Django, no olvidar estudiar nuevamente el código y readme.md de ese curso. En esa clase Meta es donde vinculamos el modelo con el serializer (segun recuerdo en esa clase meta en el curso de django vinculabamos el modelo con un formulario :/)
-* 
+* Para el método create del serializer sobre escribimos el método create del modelo, para ello creamos una variable usuario en la que guardamos la llamada al método create del modelo.
+
+* Una vez que ya tenemos los métodos que necesitamos en el serializer pasamos a crear el viewset en en el archivo *views.py*
+* Tener en cuenta que en la nueva clase que se crea para el nuevo viewset de la gestion de usuario se le pasa como parámetro *viewsets.ModelViewSet* porque se estará trabajando con un modelo determinado.
+* Creamos el serializer_class para poder vincular la data que nos llega del request con el serializer
+* Luego hacemos un query para traer todos los objetos de ese tipo que han sido creados
+* Registramos una url para poder acceder al serializer desde el buscador.
+ 
+ ![image](https://user-images.githubusercontent.com/84333525/138783464-63b5484d-dc1a-4eb1-ad80-f6cc8c9d692b.png)
+
+No tenemos que especificarle un basename debido a el *UserProfileViewSet* esta usando queryset, cuando ya estamos llamando a los objetos de por si, no es necesario definir los nombres.
+
+![image](https://user-images.githubusercontent.com/84333525/138783573-b0458369-ab51-4e53-9f35-bf73e1945376.png)
+
+* Luego ya podemos verificar al correr el servidor que esta funcionando correctamente
+
+![image](https://user-images.githubusercontent.com/84333525/138784181-47b2dd82-b67e-440b-98f1-d20248838fe6.png)
+
+*** EN ESTE PUNTO TENEMOS QUE ASEGURAR QUE NO TODOS LOS USUARIOS PUEDAN CREAR USUARIOS ***
+
+## PERMISOS
+
+* Para ello creamos en nuestra app un nuevo archivo *permissions.py*
+
+![image](https://user-images.githubusercontent.com/84333525/138785708-7a64036e-d30a-4db0-8fdc-28343aea35b7.png)
+
+Se logra que los usuarios loguiados puedan ver otros perfiles de usuario pero solo puedan cambiar su propio perfil.
+
+**De esta manera ya tenemos nuestro primer permiso personaizado, que debemos utilizar en nuestro viewset.
+
+* Para ello vamos al archivo *views.py* e importamos *from rest_framework.authentication import TokenAuthentication*
+ - TokenAuthentication es lo que vamos usar para que nuestros usuarios puedan autenticarse en nuestra API. Funiona generando un random token string, cada vez que un usuario se crea o hace login, cada ves que el usuario hace un request debemos verificarlo.
+* También importamos de nuestra app el archivo de permissions.py
+
+![image](https://user-images.githubusercontent.com/84333525/138786588-a11c0f98-25db-4d91-8957-569f03d2c44c.png)
+
+Aquí le estaoms diciendo por el metódo que utilizará para autenticarse y los permisos que tendrá.
+- Luego ya podemos correr el servidor y verificar que ya no podemos editar un usuario, solo verlo.
+
+## FILTROS
+* Para poder usar los filtros importamos filter desde el django_restframework.
+* NOTA: Es obligatorio poner las comas que señalo en la próxima imagen porque Python necesita saber que es una tupla.
+
+![image](https://user-images.githubusercontent.com/84333525/138787114-e1028049-eab3-4851-a8a1-a5e7b72425cc.png)
+
+
+## MODULO DE LOGIN
+* Para hacer la autenticación por token, importamos *from rest_framework.authtoken.views import ObtainAuthToken* 
+ 
+ ![image](https://user-images.githubusercontent.com/84333525/138790505-f2ca40a4-71ef-4e44-9429-eab6674f26db.png)
+
+* Creamos la clase que se va a encargar de la autenticación del usuario
+
+![image](https://user-images.githubusercontent.com/84333525/138790815-f2083a20-37af-4eeb-bfe6-bc2926f6f24e.png)
+
+Lo que esto hace es que le adiciona las clases de renderer a nuestro ObtainAuthToken que va habilitarlo en el admin de Django
+
+* Luego que ya tenemos la clase debemos adicionar una nueva url para poder acceder a ese método:
+  
+  ![image](https://user-images.githubusercontent.com/84333525/138791095-64c00328-aea1-4479-8d06-af535cae2615.png)
+
+
+## API FEED DEL PERFIL DEL USUARIO
+Qué necesitamos poder hacer?
+
+1. Crear nuevos items para el feed.
+2. Actualizar feed (sólo si está logueado).
+3. Borrar items.
+4. Ver todos los usuarios status updates.
+
+### API URLs
+* /api/feed/ --> list items, get, post
+* /api/feed/<feed_item_id> --> maneja items específicos, get, put, delete
+
+## CREACION DEL FEED
+* El primer paso para crear un feed es definir el modelo, todos los datos que contendrá un feed.
+  - Importamos los settings para obtener la configuración que ya tenemos establecida allí
+  
+  ![image](https://user-images.githubusercontent.com/84333525/138792251-6a82af15-2f6d-4b2a-ab68-93c4c3db630b.png)
+
+  ![image](https://user-images.githubusercontent.com/84333525/138792590-c6ada9ec-f320-4f57-b5ad-0a82e1104566.png)
+
+Lo hacemos de esa manera porque cuando actualizamos el AUTH_USER_MODEL en settings se actualiza automático en todas partes y así evitamos otros problemas ...
+
+* Siempre que hacemos una relación uno a uno además del foreignKey tenemos que definir la acción a tomar en *on_delete*
+
+* Así quedaría nuestra clase:
+
+![image](https://user-images.githubusercontent.com/84333525/138793138-acb54bcf-a17b-4688-8cd1-3e0eb13d136b.png)
+
+* Luego de haber creado el nuevo modelo, debemos pasar a correr las migraciones.
+* Justo después lo agregamos al admin de django para poder manejarlo desde el panel de administración.
+
+![image](https://user-images.githubusercontent.com/84333525/138793450-1c2ae00c-cb3f-48c5-a5e1-93bdeff29e58.png)
+
+* Luego como estaremos recibiendo información debemos crear un serializer para manejar esos datos, para ello vamos al archivo *serializer.py* y creamos la clase *ProfileFeedItemSerializer*
+
+![image](https://user-images.githubusercontent.com/84333525/138793804-4a562ed3-be57-48d0-9263-a7f94658dbc0.png)
+
+Esto configura el serializador para que trabaje con el modelo indicado.
+
+* Una vez definidos todos los pasos anteriores pasamos a crear el ViewSet:
+ 
+ ![image](https://user-images.githubusercontent.com/84333525/138794959-6a3accbf-ce15-41c1-a3f5-11ed42a5b674.png)
+
+- Usamos *authentication_classes* porque solo queremos realizar la acción si el usuario está autenticado.
+- En el serializer pusimos el *user_profile* a read_only porque queremos configurarlo basado en el usuario que está autenticado.
+- Luego creamos una función que se encarga de setear el perfil de usuario, para el usuario que está logeado.
+
+![image](https://user-images.githubusercontent.com/84333525/138795325-00e3d811-638c-4adc-a141-e1901361d60c.png)
+
+
+* Por último configuramos el router en el archivo *urls.py*:
+
+![image](https://user-images.githubusercontent.com/84333525/138795522-e4ebd0ff-d3c0-419e-86c8-a579748c954a.png)
+
+* Adicionamos un nuevo permiso que nos permita que solo el propio usuario pueda actualizar su feed:
+
+![image](https://user-images.githubusercontent.com/84333525/138795952-8bd24426-19c2-4fa9-ade3-11e73b6787cb.png)
+
+* Para agregar el nuevo permiso en nuestro viewset primero importamos *from rest_framework.permissions import IsAuthenticatedOrReadOnly*
+
+![image](https://user-images.githubusercontent.com/84333525/138796394-b4328a3b-ee42-40c6-a807-784ac4bd2b1d.png)
+
+Con esto permitimos que los usuarios que no estan loguiados también puedan leer del endpoint, para evitar esto podemos cambiar el import por *IsAuthenticated*
+
+
 
 
