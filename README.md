@@ -1,5 +1,7 @@
 # django-rest-framework-first-demo
 
+## CURSO BASICO
+
 ## INSTALACION:
 * Debemos instalar el paquete *django* --> pip install django
 * Debemos instalar el paquete *djangorestframework* --> pip install djangorestframework
@@ -323,7 +325,5 @@ Esto configura el serializador para que trabaje con el modelo indicado.
 ![image](https://user-images.githubusercontent.com/84333525/138796394-b4328a3b-ee42-40c6-a807-784ac4bd2b1d.png)
 
 Con esto permitimos que los usuarios que no estan loguiados también puedan leer del endpoint, para evitar esto podemos cambiar el import por *IsAuthenticated*
-
-
 
 
